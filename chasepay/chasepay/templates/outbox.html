@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Sent mail · ChasePay{% endblock %}
+{% block content %}
+<h1>Sent mail</h1>
+<p class="muted">Every invoice and reminder ChasePay sends is recorded here. "Dry run" means no email server is set up yet, so nothing left your machine.</p>
+{% for m in messages %}
+<article class="mail">
+  <header><strong>{{ m.subject }}</strong><span class="muted">to {{ m.to_addr }} · {{ m.created_at }} · {{ "Dry run" if m.mode == "dry-run" else "Delivered" }}</span></header>
+  <pre>{{ m.body }}</pre>
+</article>
+{% else %}<p class="muted">Nothing sent yet.</p>{% endfor %}
+{% endblock %}

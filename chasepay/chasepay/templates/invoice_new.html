@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}New invoice · ChasePay{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>New invoice</h1>
+  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+  {% if not customers %}
+    <p>You need a customer first.</p><a class="btn primary" href="/customers">Add a customer</a>
+  {% else %}
+  <form method="post" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Customer
+      <select name="customer_id" required>
+        {% for c in customers %}<option value="{{ c.id }}" {{ "selected" if form and form.customer_id == c.id }}>{{ c.name }} ({{ c.email }})</option>{% endfor %}
+      </select>
+    </label>
+    <label>What is this for? <input name="description" value="{{ form.description if form else '' }}" placeholder="Website design" required></label>
+    <div class="two">
+      <label>Amount <input name="amount" inputmode="decimal" value="{{ form.amount if form else '' }}" placeholder="750" required></label>
+      <label>Currency
+        <select name="currency">{% for c in currencies %}<option {{ "selected" if form and form.currency == c }}>{{ c }}</option>{% endfor %}</select>
+      </label>
+    </div>
+    <label>Due date <input type="date" name="due_date" value="{{ form.due_date if form else '' }}" min="{{ today.isoformat() }}" required></label>
+    <label class="check"><input type="checkbox" name="send_now" value="1" checked> Email it to the customer now</label>
+    <button class="primary">Create invoice</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

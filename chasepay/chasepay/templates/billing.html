@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Plan · ChasePay{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Your plan: {{ user.plan | capitalize }}</h1>
+  {% if user.plan == "pro" %}
+    <p>You have unlimited invoices, the full reminder sequence, recurring invoices and brand colours. To cancel, email us and we'll stop your subscription.</p>
+  {% else %}
+    <p>Pro is {{ config.PRO_PRICE_LABEL }}: unlimited invoices, the full four-step reminder sequence, recurring invoices, brand colour and part-payment tracking.</p>
+    <form method="post" action="/billing/upgrade"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="primary">Upgrade to Pro</button></form>
+    {% if not configured %}<p class="muted">Online payment isn't switched on for this installation yet.</p>{% endif %}
+  {% endif %}
+</section>
+{% endblock %}

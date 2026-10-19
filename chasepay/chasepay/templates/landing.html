@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Stop chasing people for money.</h1>
+  <p class="lede">Create an invoice, email it, and ChasePay follows up before the due date, on the day, and when it's late. You do nothing.</p>
+  <p class="row"><a class="btn primary" href="/signup">Create a free account</a><a class="btn" href="/login">Log in</a></p>
+</section>
+
+<h2>What your customer receives, without you lifting a finger</h2>
+<ol class="timeline sample">
+  <li><span class="t-label">3 days before</span><span class="t-state">"Your invoice #1042 for $750 is due in 3 days."</span></li>
+  <li><span class="t-label">Due date</span><span class="t-state">"Your invoice of $750 is due today."</span></li>
+  <li><span class="t-label">3 days late</span><span class="t-state">"Just checking in regarding the outstanding $750 invoice."</span></li>
+  <li><span class="t-label">7 days late</span><span class="t-state">"This is a reminder that invoice #1042 remains unpaid."</span></li>
+</ol>
+<p class="muted">The moment you mark an invoice paid, the reminders stop.</p>
+
+<h2>Pricing</h2>
+<div class="plans">
+  <div class="plan"><h3>Free</h3><p class="price">$0</p>
+    <ul><li>{{ config.FREE_LIMIT }} unpaid invoices at a time</li><li>PDF invoices</li><li>Reminders on the due date and 7 days late</li></ul></div>
+  <div class="plan pro"><h3>Pro</h3><p class="price">{{ config.PRO_PRICE_LABEL }}</p>
+    <ul><li>Unlimited invoices</li><li>The full four-step reminder sequence</li><li>Recurring invoices</li><li>Your brand colour on invoices</li><li>Part-payment tracking</li></ul></div>
+</div>
+{% endblock %}

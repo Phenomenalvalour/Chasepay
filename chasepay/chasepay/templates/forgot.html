@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="narrow">
+  <h1>Reset your password</h1>
+  {% if sent %}
+    <p class="notice">If an account exists for that email, a reset link is on its way. It works for one hour.</p>
+  {% else %}
+  <form method="post" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Email <input type="email" name="email" required autocomplete="email"></label>
+    <button class="primary">Email me a reset link</button>
+  </form>
+  {% endif %}
+  <p class="muted"><a href="/login">Back to log in</a></p>
+</section>
+{% endblock %}

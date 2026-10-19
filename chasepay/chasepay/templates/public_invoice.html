@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Invoice #{{ inv.number }} from {{ owner.business_name or owner.email }}{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% if owner.plan == "pro" %}<style>:root{--accent:{{ owner.brand_color }}}</style>{% endif %}{% endblock %}
+{% block content %}
+<section class="narrow">
+  <p class="muted">From {{ owner.business_name or owner.email }}</p>
+  <h1>Invoice #{{ inv.number }}</h1>
+  <dl class="facts">
+    <div><dt>For</dt><dd>{{ inv.description }}</dd></div>
+    <div><dt>{{ "Balance due" if inv.paid_cents else "Amount due" }}</dt><dd class="big">{{ inv.balance_cents | money(inv.currency) }}</dd></div>
+    <div><dt>Due</dt><dd>{{ inv.due_date }}</dd></div>
+    <div><dt>Status</dt><dd>{{ "Paid. Thank you." if inv.status == "paid" else ("Cancelled" if inv.status == "void" else ("Overdue" if inv.overdue else "Unpaid")) }}</dd></div>
+  </dl>
+  {% if inv.status == "unpaid" and owner.payment_details %}
+  <h2>How to pay</h2><pre class="pay">{{ owner.payment_details }}</pre>
+  {% endif %}
+  <p><a class="btn" href="/i/{{ token }}/pdf">Download PDF</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ "Create your account" if mode == "signup" else "Log in" }} · ChasePay{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>{{ "Stop chasing people for money." if mode == "signup" else "Welcome back." }}</h1>
+  <p class="lede">{{ "Create an invoice, send it, and ChasePay follows up until it's paid." if mode == "signup" else "Log in to see what's still unpaid." }}</p>
+  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+  <form method="post" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+    {% if mode == "signup" %}
+    <label>Business or your name <input name="business_name" value="{{ business_name or '' }}" autocomplete="organization"></label>
+    {% endif %}
+    <label>Email <input type="email" name="email" value="{{ email or '' }}" required autocomplete="email"></label>
+    <label>Password <input type="password" name="password" required minlength="{{ 8 if mode == 'signup' else 1 }}" autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}"></label>
+    <button class="primary">{{ "Create account" if mode == "signup" else "Log in" }}</button>
+  </form>
+  {% if mode == "login" %}<p class="muted"><a href="/forgot">Forgot your password?</a></p>{% endif %}
+  <p class="muted">{% if mode == "signup" %}Already have an account? <a href="/login">Log in</a>{% else %}New here? <a href="/signup">Create an account</a>{% endif %}</p>
+</section>
+{% endblock %}

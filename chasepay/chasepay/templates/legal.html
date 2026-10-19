@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="narrow prose">
+{% if doc == "privacy" %}
+<h1>Privacy</h1>
+<p>ChasePay stores your account email, your business name and payment details, your customers' names and emails, and your invoices, so that we can create and send them for you.</p>
+<p>We email your customers only on your behalf, only about invoices you created. We do not sell your data. You can download everything or delete your account from Settings.</p>
+<p class="muted">Template text. Have a lawyer review it, and update it with your company name and contact email, before you take real customers.</p>
+{% else %}
+<h1>Terms</h1>
+<p>ChasePay is a tool for sending invoices and payment reminders. You are responsible for the invoices you send and for having the right to contact your customers.</p>
+<p>ChasePay does not collect money from your customers. It records and reminds. Pro is billed monthly and you can cancel at any time.</p>
+<p class="muted">Template text. Have a lawyer review it, and add your company name and governing law, before you take real customers.</p>
+{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,4 @@
+{# Four dots: the follow-up sequence for one invoice. Filled = sent. #}
+<span class="chase" aria-label="Follow-up progress">
+{% for s in steps %}<span class="dot {{ s.status }}" title="{{ s.label }}: {{ s.status }} ({{ s.send_on }})"></span>{% endfor %}
+</span>

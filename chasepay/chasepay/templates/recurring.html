@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Recurring · ChasePay{% endblock %}
+{% block content %}
+<h1>Recurring invoices</h1>
+{% if user.plan != "pro" %}
+  <p class="notice">Recurring invoices are part of Pro. <a href="/billing">See Pro</a></p>
+{% elif not customers %}
+  <p>Add a <a href="/customers">customer</a> first.</p>
+{% else %}
+<form method="post" class="stack card"><input type="hidden" name="csrf" value="{{ csrf }}">
+  <label>Customer <select name="customer_id">{% for c in customers %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></label>
+  <label>What is it for? <input name="description" placeholder="Monthly website care plan" required></label>
+  <div class="two"><label>Amount <input name="amount" inputmode="decimal" required></label>
+    <label>Currency <select name="currency">{% for c in currencies %}<option>{{ c }}</option>{% endfor %}</select></label></div>
+  <div class="two"><label>Repeats <select name="every"><option value="monthly">Every month</option><option value="weekly">Every week</option></select></label>
+    <label>Days to pay <input type="number" name="due_days" value="14" min="0" max="120"></label></div>
+  <label>First invoice goes out on <input type="date" name="first_date" min="{{ today.isoformat() }}" required></label>
+  <button class="primary">Save recurring invoice</button>
+</form>
+{% endif %}
+{% if rows %}
+<ul class="ledger plain">
+  {% for r in rows %}
+  <li><span class="inv-main"><span class="who">{{ r.customer_name }} · {{ r.amount_cents | money(r.currency) }}</span>
+    <span class="what">{{ r.description }} · {{ r.every }}{{ " · next " + r.next_issue if r.active else " · stopped" }}</span></span>
+    {% if r.active %}<form method="post" action="/recurring/{{ r.id }}/stop"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">Stop</button></form>{% endif %}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

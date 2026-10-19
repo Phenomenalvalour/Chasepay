@@ -1,0 +1,37 @@
+# Render "Blueprint": tells Render how to run ChasePay. Check Render's current pricing before deploying;
+# a persistent disk (needed for the SQLite database) requires a paid instance.
+services:
+  - type: web
+    name: chasepay
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    disk:
+      name: chasepay-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: CHASEPAY_DB
+        value: /data/chasepay.db
+      - key: CHASEPAY_SECRET
+        generateValue: true
+      - key: CHASEPAY_HTTPS
+        value: "1"
+      - key: APP_TZ
+        value: Africa/Lagos
+      - key: BASE_URL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: PAYSTACK_PLAN_CODE
+        sync: false

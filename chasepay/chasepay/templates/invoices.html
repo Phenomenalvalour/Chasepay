@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Invoices · ChasePay{% endblock %}
+{% block content %}
+<div class="row between">
+  <h1>Invoices</h1>
+  <a class="btn primary" href="/invoices/new">New invoice</a>
+</div>
+
+<p class="summary">
+  {% if open_count %}
+    <strong>{% for cur, cents in totals.items() %}{{ cents | money(cur) }}{% if not loop.last %} + {% endif %}{% endfor %}</strong> still unpaid across {{ open_count }} invoice{{ "" if open_count == 1 else "s" }}{% if overdue_count %}, <span class="late">{{ overdue_count }} overdue</span>{% endif %}.
+  {% else %}Nothing outstanding.{% endif %}
+  {% if user.plan != "pro" %}<span class="muted"> Free plan: {{ open_count }} of {{ config.FREE_LIMIT }} unpaid invoices used. <a href="/billing">Go Pro</a></span>{% endif %}
+</p>
+
+{% if invoices %}
+<ul class="ledger">
+  {% for inv in invoices %}
+  <li class="{{ 'overdue' if inv.overdue else inv.status }}">
+    <a class="inv-main" href="/invoices/{{ inv.id }}">
+      <span class="who">{{ inv.customer_name }}</span>
+      <span class="what">#{{ inv.number }} · {{ inv.description }}{{ "" if inv.sent_at or inv.status != "unpaid" else " · not emailed yet" }}</span>
+    </a>
+    <span class="when">
+      {% if inv.status == "paid" %}Paid{% elif inv.status == "void" %}Cancelled
+      {% elif inv.overdue %}{{ inv.days_late }} day{{ "" if inv.days_late == 1 else "s" }} late
+      {% elif inv.days_until == 0 %}Due today
+      {% else %}Due in {{ inv.days_until }} day{{ "" if inv.days_until == 1 else "s" }}{% endif %}
+    </span>
+    {% with steps = inv.steps %}{% include "_chase.html" %}{% endwith %}
+    <span class="amt">{{ (inv.balance_cents if inv.status == "unpaid" else inv.amount_cents) | money(inv.currency) }}</span>
+  </li>
+  {% endfor %}
+</ul>
+<form method="post" action="/reminders/run" class="row"><input type="hidden" name="csrf" value="{{ csrf }}">
+  <button class="ghost">Send due reminders now</button>
+  <span class="muted">This also runs by itself every hour.</span>
+</form>
+{% else %}
+<div class="empty">
+  <p>No invoices yet. Add your payment details in <a href="/settings">Settings</a>, add a customer, then create your first invoice.</p>
+  <a class="btn" href="/customers">Add a customer</a>
+</div>
+{% endif %}
+{% endblock %}

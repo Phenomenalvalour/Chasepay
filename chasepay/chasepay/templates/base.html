@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}ChasePay{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="top">
+  <a class="mark" href="/">ChasePay</a>
+  {% if user %}
+  <nav>
+    <a href="/invoices">Invoices</a>
+    <a href="/customers">Customers</a>
+    <a href="/recurring">Recurring</a>
+    <a href="/outbox">Sent mail</a>
+    <a href="/settings">Settings</a>
+    <a href="/logout">Log out</a>
+  </nav>
+  {% else %}
+  <nav><a href="/login">Log in</a><a href="/signup">Create account</a></nav>
+  {% endif %}
+</header>
+<main>
+{% if flash %}<p class="notice" role="status">{{ flash }}</p>{% endif %}
+{% block content %}{% endblock %}
+</main>
+<footer class="foot"><a href="/terms">Terms</a><a href="/privacy">Privacy</a></footer>
+</body>
+</html>

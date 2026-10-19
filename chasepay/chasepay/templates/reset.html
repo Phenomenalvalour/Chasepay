@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="narrow">
+  <h1>Choose a new password</h1>
+  {% if not valid %}
+    <p class="error">This link has expired or was already used. <a href="/forgot">Ask for a new one</a>.</p>
+  {% else %}
+  {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+  <form method="post" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>New password <input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
+    <button class="primary">Save new password</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Invoice #{{ inv.number }} · ChasePay{% endblock %}
+{% block content %}
+<p><a href="/invoices">← All invoices</a></p>
+<div class="row between">
+  <h1>Invoice #{{ inv.number }}</h1>
+  <span class="badge {{ 'overdue' if inv.overdue else inv.status }}">
+    {% if inv.status == "paid" %}Paid{% elif inv.status == "void" %}Cancelled{% elif inv.overdue %}{{ inv.days_late }} days late{% else %}Unpaid{% endif %}
+  </span>
+</div>
+
+<dl class="facts">
+  <div><dt>Customer</dt><dd>{{ inv.customer_name }}<br><span class="muted">{{ inv.customer_email }}</span></dd></div>
+  <div><dt>For</dt><dd>{{ inv.description }}</dd></div>
+  <div><dt>{{ "Balance" if inv.paid_cents else "Amount" }}</dt><dd class="big">{{ (inv.balance_cents if inv.status == "unpaid" else inv.amount_cents) | money(inv.currency) }}</dd>{% if inv.paid_cents and inv.status == "unpaid" %}<span class="muted">of {{ inv.amount_cents | money(inv.currency) }}</span>{% endif %}</div>
+  <div><dt>Due</dt><dd>{{ inv.due_date }}</dd></div>
+  <div><dt>Emailed</dt><dd>{{ inv.sent_at[:16].replace("T", " ") if inv.sent_at else "Not sent yet" }}</dd></div>
+</dl>
+
+<div class="row">
+  <a class="btn" href="/invoices/{{ inv.id }}/pdf" target="_blank">View PDF</a>
+  <a class="btn" href="/i/{{ inv.public_token }}" target="_blank">Customer's page</a>
+  {% if inv.status == "unpaid" %}
+  <form method="post" action="/invoices/{{ inv.id }}/send"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="{{ 'primary' if not inv.sent_at else '' }}">{{ "Email invoice" if not inv.sent_at else "Email it again" }}</button></form>
+  <form method="post" action="/invoices/{{ inv.id }}/paid"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="success">Mark as paid</button></form>
+  {% endif %}
+</div>
+
+{% if inv.status == "unpaid" %}
+<h2>Record a part payment</h2>
+<form method="post" action="/invoices/{{ inv.id }}/payments" class="inline-form"><input type="hidden" name="csrf" value="{{ csrf }}">
+  <label>Amount received <input name="amount" inputmode="decimal" required></label>
+  <label>Note <input name="note" placeholder="Bank transfer"></label>
+  <button>Record payment</button>
+</form>
+{% endif %}
+{% if payments %}
+<ul class="ledger plain">{% for p in payments %}<li><span class="who">{{ p.amount_cents | money(inv.currency) }}</span><span class="what">{{ p.paid_on }}{{ " · " + p.note if p.note }}</span></li>{% endfor %}</ul>
+{% endif %}
+
+<h2>Follow-up schedule</h2>
+{% if inv.status == "unpaid" and not inv.sent_at %}<p class="notice">Reminders start once the invoice has been emailed.</p>{% endif %}
+{% if not inv.reminders_on %}<p class="notice">Reminders are paused for this invoice.</p>{% endif %}
+<ol class="timeline">
+  {% for s in steps %}
+  <li class="{{ s.status }}">
+    <span class="t-label">{{ s.label }}</span>
+    <span class="t-date">{{ s.send_on }}</span>
+    <span class="t-state">{{ {"scheduled": "Scheduled", "sending": "Sending", "sent": "Sent", "skipped": "Skipped (already past)", "cancelled": "Cancelled"}[s.status] }}</span>
+  </li>
+  {% endfor %}
+</ol>
+{% if user.plan != "pro" %}<p class="muted">Free plan sends two reminders. <a href="/billing">Pro</a> sends all four.</p>{% endif %}
+{% if inv.status == "unpaid" %}
+<div class="row">
+  <form method="post" action="/invoices/{{ inv.id }}/reminders"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">{{ "Pause reminders" if inv.reminders_on else "Resume reminders" }}</button></form>
+  <form method="post" action="/invoices/{{ inv.id }}/void"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="ghost">Cancel this invoice</button></form>
+</div>
+{% endif %}
+{% endblock %}

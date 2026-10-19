@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Settings · ChasePay{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>Settings</h1>
+  <form method="post" class="stack"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Business or your name <input name="business_name" value="{{ user.business_name }}"></label>
+    <label>How customers should pay you
+      <textarea name="payment_details" rows="5" placeholder="Bank: ...&#10;Account name: ...&#10;Account number: ...">{{ user.payment_details }}</textarea>
+    </label>
+    <p class="muted">This appears on every invoice PDF, every reminder email and your customer's online invoice page.</p>
+    <label>Brand colour {% if user.plan != "pro" %}<span class="muted">(Pro)</span>{% endif %}
+      <input type="color" name="brand_color" value="{{ user.brand_color }}" {{ "disabled" if user.plan != "pro" }}>
+    </label>
+    <button class="primary">Save settings</button>
+  </form>
+  <h2>Plan</h2>
+  <p>You are on the <strong>{{ user.plan | capitalize }}</strong> plan. <a href="/billing">{{ "Manage" if user.plan == "pro" else "See Pro" }}</a></p>
+  <h2>Your data</h2>
+  <p><a class="btn" href="/account/export">Download everything (JSON)</a></p>
+  <form method="post" action="/account/delete" class="stack card"><input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>Delete my account and all its data. Type your password to confirm. <input type="password" name="password" required></label>
+    <button class="danger">Delete account</button>
+  </form>
+</section>
+{% endblock %}
